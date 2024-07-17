@@ -1,0 +1,5 @@
+av
+cv2
+json
+ultralytics
+numpy
