@@ -27,14 +27,12 @@ def draw_detections(frames, results, model):
     for frame, result in zip(frames, results):
         if result.boxes is not None:
             for box in result.boxes:
-                x1, y1, x2, y2 = box.xyxy[0]  # Unpack the bounding box coordinates
-                conf = box.conf[0]  # Confidence score
-                cls = box.cls[0]  # Class label index
+                x1, y1, x2, y2 = box.xyxy[0] 
+                conf = box.conf[0]
+                cls = box.cls[0]
 
-                # Get the class name from the model's names dictionary
                 class_name = model.names[int(cls)]
 
-                # Draw the bounding box and label on the frame
                 cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 2)
                 cv2.putText(frame, f'{class_name} {conf:.2f}', (int(x1), int(y1) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
         else:
@@ -45,7 +43,7 @@ def draw_detections(frames, results, model):
 def detect_logos(frames, model):
     results = []
     for frame in frames:
-        result = model.predict(source=frame)[0]  # Get the first (and only) result
+        result = model.predict(source=frame)[0]
         results.append(result)
     return results
 
@@ -66,18 +64,18 @@ def save_detections_to_json(timestamps, results, model, json_path):
     for timestamp, result in zip(timestamps, results):
         if result.boxes is not None:
             for box in result.boxes:
-                x1, y1, x2, y2 = box.xyxy[0]  # Unpack the bounding box coordinates
-                cls = box.cls[0]  # Class label index
+                x1, y1, x2, y2 = box.xyxy[0] 
+                cls = box.cls[0]  
                 class_name = model.names[int(cls)]
                 width = x2 - x1
                 height = y2 - y1
                 distance = calculate_distance_from_center(result.orig_img, x1, y1, x2, y2)
                 
                 detection_info = {
-                    "timestamp": round(timestamp, 2),  # Rounding off timestamp
-                    "width (pixels)": round(float(width), 2),  # Rounding off width
-                    "height (pixels)": round(float(height), 2),  # Rounding off height
-                    "distance_from_center (pixels)": round(float(distance), 2)  # Rounding off distance
+                    "timestamp": round(timestamp, 2),
+                    "width (pixels)": round(float(width), 2),
+                    "height (pixels)": round(float(height), 2),
+                    "distance_from_center (pixels)": round(float(distance), 2)
                 }
                 
                 if class_name == "Pepsi":
@@ -88,26 +86,19 @@ def save_detections_to_json(timestamps, results, model, json_path):
     with open(json_path, 'w') as f:
         json.dump(detections, f, indent=4)
 
-# Example usage
-video_path = 'video3.mp4'
-model_path = 'y.pt'  # Updated to use YOLOv8x
-output_video_path = 'video3_detections.mp4'
-output_json_path = 'detections_3.json'
+video_path = 'path_to_video.mp4'
+model_path = '.Model/best.pt' 
+output_video_path = 'annotated_video.mp4'
+output_json_path = 'results.json'
 
-# Load the YOLO model
 model = YOLO(model_path)
 
-# Extract frames and timestamps from the video
 frames, timestamps = extract_frames(video_path)
 
-# Detect logos in the frames
 results = detect_logos(frames, model)
 
-# Annotate frames with detections
 annotated_frames = draw_detections(frames, results, model)
 
-# Save the annotated frames as a video
 save_annotations(annotated_frames, output_video_path)
 
-# Save the detections to a JSON file
 save_detections_to_json(timestamps, results, model, output_json_path)
