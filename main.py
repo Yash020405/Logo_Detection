@@ -86,8 +86,8 @@ def save_detections_to_json(timestamps, results, model, json_path):
     with open(json_path, 'w') as f:
         json.dump(detections, f, indent=4)
 
-video_path = 'path_to_video.mp4'
-model_path = '.Model/best.pt' 
+video_path = 'path_to_video.mp4' # Path to the video file
+model_path = 'Model/best.pt' 
 output_video_path = 'annotated_video.mp4'
 output_json_path = 'results.json'
 
